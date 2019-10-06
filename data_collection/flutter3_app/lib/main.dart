@@ -2,7 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:sensors/sensors.dart';
 import 'dart:io';
-import 'package:sqflite/sqflite.dart';
+import 'dart:async';
+import 'dart:core';
+
+import 'package:flutter/foundation.dart';
+import 'package:path_provider/path_provider.dart';
+
+
 
 
 
@@ -45,32 +51,49 @@ class MyApp extends StatelessWidget {
                   onPressed: () async {
 
                     int time = DateTime.now().millisecondsSinceEpoch;
-                    List IMU_gravitynull = [];
                     int count = 0;
+                    List IMU  = [];
+                    List gyro = [];
 
-                    userAccelerometerEvents.listen((UserAccelerometerEvent event) {
-                      DateTime timestamp = DateTime.now();
-                      IMU_gravitynull.add(event);
-                      firestore(titleControler.text, bodyControler.text, event.x, event.y, event.z, timestamp.toString());
+                    Stopwatch timer = Stopwatch()..start();
+
+
+                    gyroscopeEvents.listen((GyroscopeEvent event){
+                      gyro.add([event.x, event.y, event.z]);
+
 
                     });
 
+                    userAccelerometerEvents.listen((UserAccelerometerEvent event) {
+                      firestore(titleControler.text, bodyControler.text, event.x, event.y, event.z, gyro[0][0], gyro[0][1], gyro[0][2], time);
+                      if (timer.elapsedMilliseconds/1000 >= 4*3600){
+                        exit(0);
+
+
+                      }
+
+
+                    }
+
+                    );
+
                     },
-                  child: const Text("Create"),
+                  child: const Text("Send"),
                 )
               ],
             ),
           )),
+
     );
   }
 }
 
 
-firestore(String name, String intoxication, double x, double y, double z, String timestamp) async{
+firestore(String name, String intoxication, double x, double y, double z, double x1, double y1, double z1, int timestamp) {
 // Delete the database
 // open the database
   DocumentReference document = Firestore.instance.collection('data').document();
-  document.setData({ 'name': name, 'intoxication': intoxication, 'x': x, 'y': y, 'z': z, 'timestamp': timestamp});
+  document.setData({ 'name': name, 'intoxication': intoxication, 'x': x, 'y': y, 'z': z, 'x1': x1, 'y1': y1, 'z1': z1, 'timestamp': timestamp});
 
 
 }
