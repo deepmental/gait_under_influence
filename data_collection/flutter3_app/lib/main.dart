@@ -7,12 +7,95 @@ import 'dart:core';
 
 import 'package:flutter/foundation.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:auto_size_text/auto_size_text.dart';
+
+
+
+void main() => runApp(MainClass());
+
+class MainClass extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return new MaterialApp(
+      title: 'Flutter Demo',
+      home: new TermsPrivacy(),
+      routes: <String, WidgetBuilder>{
+        '/datacollection': (BuildContext context) => new DataCollection(),
+      },
+    );
+  }
+}
 
 
 
 
+class CounterStorage {
+  Future<String> get _localPath async {
+    final directory = await getApplicationDocumentsDirectory();
 
-class MyApp extends StatelessWidget {
+    return directory.path;
+  }
+
+  Future<File> get _localFile async {
+    final path = await _localPath;
+    return File('$path/counter.txt');
+  }
+
+  Future<int> readCounter() async {
+    try {
+      final file = await _localFile;
+
+      // Read the file
+      String contents = await file.readAsString();
+
+      return int.parse(contents);
+    } catch (e) {
+      // If encountering an error, return 0
+      return 0;
+    }
+  }
+}
+
+
+
+
+class TermsPrivacy extends StatelessWidget {
+  // This widget is the root of your application.
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: 'Text overflow',
+      home: Scaffold(
+        appBar: AppBar(
+          title: Text("Terms of conditions and privacy policy agreement"),
+        ),
+        body: Column(
+            children: <Widget> [
+
+        Row(
+        children: <Widget>[
+        Expanded( // Constrains AutoSizeText to the width of the Row
+        child: AutoSizeText(
+        agreement,
+          maxLines: 100,
+        )
+      ),
+      ],
+    ),
+              new RaisedButton(
+                  child: const Text('Agree'),
+                  onPressed: () => Navigator.of(context).pushNamed('/datacollection')
+              )
+            ],
+        ),
+      ),
+    );
+  }
+}
+
+
+class DataCollection extends StatelessWidget {
   TextEditingController titleControler = new TextEditingController();
   TextEditingController bodyControler = new TextEditingController();
 
@@ -53,9 +136,9 @@ class MyApp extends StatelessWidget {
                     int time = DateTime.now().millisecondsSinceEpoch;
                     int count = 0;
                     List IMU  = [];
-                    List gyro = [];
+                      List gyro = [];
 
-                    Stopwatch timer = Stopwatch()..start();
+                      Stopwatch timer = Stopwatch()..start();
 
 
                     gyroscopeEvents.listen((GyroscopeEvent event){
@@ -71,7 +154,6 @@ class MyApp extends StatelessWidget {
 
 
                       }
-
 
                     }
 
@@ -98,4 +180,5 @@ firestore(String name, String intoxication, double x, double y, double z, double
 
 }
 
-void main() => runApp(MyApp());
+
+

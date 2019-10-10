@@ -28,6 +28,8 @@ dependencies:
   aeyrium_sensor: ^1.0.7
   path_provider: any
   sqflite: ^1.1.6
+  auto_size_text: any
+
 
 
 
